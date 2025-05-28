@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Fishbook - Home{% endblock %}
+
+{% block content %}
+{% if not request.user.is_authenticated %}
+  <section class="auth-box">
+    <h2>Welcome to Fishbook!</h2>
+    <p><a href="{% url 'login' %}">Log in</a> or <a href="{% url 'register' %}">Register</a> to dive in 🐟</p>
+  </section>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+<aside class="sidebar">
+  <h2>Your Profile</h2>
+  <p><strong>Username:</strong> {{ request.user.username }}</p>
+  <p><strong>Favorite Fish:</strong> Neon Tetra</p>
+</aside>
+
+<main class="feed">
+  <div class="post-actions">
+    <a href="{% url 'add_post' %}" class="add-post-btn">➕ Dodaj Post</a>
+  </div>
+
+  {% for post in posts %}
+    <div class="card">
+      <p>{{ post.description }}</p>
+      {% if post.image %}
+        <img src="{{ post.image.url }}" alt="Post image" style="max-width: 100%; height: auto;">
+      {% endif %}
+      <p><small>By {{ post.author.username }} on {{ post.created_at }}</small></p>
+
+      {% if post.author == request.user %}
+        <div class="post-actions">
+          <a href="{% url 'edit_post' post.id %}" class="edit-btn">✏️ Edytuj</a>
+          <a href="{% url 'delete_post' post.id %}" class="delete-btn">🗑️ Usuń</a>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</main>
+{% endif %}
+
+<aside class="rightbar">
+  <h2>Fish Groups</h2>
+  <ul>
+    <li>🌿 Aquascaping Enthusiasts</li>
+    <li>🐡 Pufferfish Fans</li>
+    <li>🧪 Water Chemistry Nerds</li>
+    <li>🛠️ DIY Aquarium Builds</li>
+  </ul>
+</aside>
+{% endblock %}
